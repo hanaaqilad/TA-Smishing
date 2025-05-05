@@ -1,31 +1,43 @@
 import streamlit as st
 import torch
-from unsloth import FastLanguageModel
+# from unsloth import FastLanguageModel
+from transformers import AutoTokenizer, AutoModelForCausalLM
 
 from huggingface_hub import login
 import os
 login(token=os.getenv("HUGGINGFACE_TOKEN"))
 
-# Konfigurasi model
-@st.cache_resource  # agar tidak reload model terus
+# Konfigurasi model pake TRANSFORMERS
+@st.cache_resource # agar tidak reload model terus
 def load_model():
-    max_seq_length = 2048
-    dtype = torch.float16 if torch.cuda.is_available() else torch.float32
-    load_in_4bit = True
-    # model_name = "lora_llama"
-    model_name = "ilybawkugo/lora-llama3.1-8b-smishing"
-
-
-    model, tokenizer = FastLanguageModel.from_pretrained(
-        model_name = model_name,
-        max_seq_length = max_seq_length,
-        dtype = dtype,
-        load_in_4bit = load_in_4bit,
-        device_map = "auto",
-        trust_remote_code = True,
+    model_id = "ilybawkugo/lora-llama3.1-8b-smishing"  # atau model kecil lain yang support CPU
+    tokenizer = AutoTokenizer.from_pretrained(model_id)
+    model = AutoModelForCausalLM.from_pretrained(
+        model_id,
+        torch_dtype=torch.float32,
+        low_cpu_mem_usage=True
     )
-    FastLanguageModel.for_inference(model)
     return model, tokenizer
+
+# # Konfigurasi model pake UNSLOTH
+# @st.cache_resource  # agar tidak reload model terus
+# def load_model():
+#     max_seq_length = 2048
+#     dtype = torch.float16 if torch.cuda.is_available() else torch.float32
+#     load_in_4bit = True
+#     model_name = "ilybawkugo/lora-llama3.1-8b-smishing"
+
+
+#     model, tokenizer = FastLanguageModel.from_pretrained(
+#         model_name = model_name,
+#         max_seq_length = max_seq_length,
+#         dtype = dtype,
+#         load_in_4bit = load_in_4bit,
+#         device_map = "auto",
+#         trust_remote_code = True,
+#     )
+#     FastLanguageModel.for_inference(model)
+#     return model, tokenizer
 
 model, tokenizer = load_model()
 
