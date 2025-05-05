@@ -5,7 +5,10 @@ from transformers import AutoTokenizer, AutoModelForCausalLM
 
 from huggingface_hub import login
 import os
-login(token=os.getenv("HUGGINGFACE_TOKEN"))
+
+# login(token=os.getenv("HUGGINGFACE_TOKEN"))
+# Directly set the Hugging Face token
+login(token="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")
 
 # Konfigurasi model pake TRANSFORMERS
 @st.cache_resource # agar tidak reload model terus
@@ -93,3 +96,14 @@ if st.button("Klasifikasikan"):
     with st.spinner("Menganalisis..."):
         result = classify_sms(sms_input)
         st.success(f"Hasil Prediksi: **{result}**")
+
+
+# Expose Streamlit app to the web using ngrok
+public_url = ngrok.connect(8501)
+
+# Run Streamlit app
+os.system(f"streamlit run app.py &")
+
+# Print the public URL
+print(f"Streamlit app is running at: {public_url}")
+
