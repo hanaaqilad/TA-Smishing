@@ -1,0 +1,6 @@
+streamlit
+torch
+unsloth
+transformers
+huggingface_hub
+accelerate
