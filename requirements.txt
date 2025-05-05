@@ -4,3 +4,4 @@ unsloth
 transformers
 huggingface_hub
 accelerate
+pyngrok
