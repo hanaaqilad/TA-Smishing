@@ -1,7 +1,7 @@
 import streamlit as st
 import torch
 # from unsloth import FastLanguageModel
-from pyngrok import ngrok 
+# from pyngrok import ngrok 
 from transformers import AutoTokenizer, AutoModelForCausalLM
 
 from huggingface_hub import login
@@ -100,7 +100,7 @@ if st.button("Klasifikasikan"):
 
 
 # Expose Streamlit app to the web using ngrok
-public_url = ngrok.connect(8501)
+# public_url = ngrok.connect(8501)
 
 # Run Streamlit app
 os.system(f"streamlit run app.py &")
