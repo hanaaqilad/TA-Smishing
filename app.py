@@ -1,6 +1,7 @@
 import streamlit as st
 import torch
 # from unsloth import FastLanguageModel
+from pyngrok import ngrok 
 from transformers import AutoTokenizer, AutoModelForCausalLM
 
 from huggingface_hub import login
