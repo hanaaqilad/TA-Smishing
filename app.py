@@ -106,5 +106,5 @@ if st.button("Klasifikasikan"):
 os.system(f"streamlit run app.py &")
 
 # Print the public URL
-print(f"Streamlit app is running at: {public_url}")
+# print(f"Streamlit app is running at: {public_url}")
 
