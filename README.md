@@ -1,6 +1,6 @@
 # 📱 Smishing SMS Classifier
 
-A Streamlit web app to classify SMS messages into **Penipuan (Scam)**, **Promo**, or **Normal** using a fine-tuned LLaMA 3.1 model hosted on Hugging Face.
+A Streamlit web app to classify SMS messages into **Penipuan (Scam)**, **Promo**, or **Normal** using a fine-tuned LLaMA 3.1 model privately hosted on Hugging Face.
 
 ---
 
