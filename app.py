@@ -93,13 +93,13 @@ st.markdown("Masukkan isi SMS dan model akan menganalisisnya.")
 
 sms_input = st.text_area("Isi SMS", height=150)
 
-if st.button("Cek"):
+if st.button("Cek", type="primary"):
     with st.spinner("Menganalisis..."):
         result = classify_sms(sms_input)
         if result == 'penipuan':
             st.error(f"Hasil prediksi: **Penipuan**")
         elif result == 'promo':
-            st.info(f"Hasil prediksi: **Promo**")
+            st.warning(f"Hasil prediksi: **Promo**")
         else:
             st.success(f"Hasil prediksi: **Normal**")
 
