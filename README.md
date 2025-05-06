@@ -8,8 +8,8 @@ A Streamlit web app to classify SMS messages into **Penipuan (Scam)**, **Promo**
 
 This project helps detect potentially malicious or promotional messages using a custom fine-tuned LLM. You can run the app either on:
 
-- 🧠 **Google Colab** (for users without local GPU)
-- 💻 **Your Local Machine** (recommended if you have GPU access)
+- **Google Colab** (for users without local GPU)
+- **Your Local Machine** (recommended if you have GPU access)
 
 ---
 
@@ -41,7 +41,10 @@ pip install -r requirements.txt
 
 #### 🛠 Step 3: Create a .env file in the root directory
 ```bash
-streamlit run app.py
+# .env
+HUGGINGFACE_TOKEN=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
+NGROK_AUTH_TOKEN=2wf3EgLOOsikEst1biP2Vm1KkbY_7eoheyS3ZRYWqnqv4E4B
+
 ```
 
 #### 🛠 Step 4: Run the Streamlit app
