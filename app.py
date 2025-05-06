@@ -3,14 +3,17 @@ import torch
 # from unsloth import FastLanguageModel
 # from pyngrok import ngrok 
 from transformers import AutoTokenizer, AutoModelForCausalLM
-
+from dotenv import load_dotenv
 from huggingface_hub import login
 import os
 
-# login(token=os.getenv("HUGGINGFACE_TOKEN"))
 # Directly set the Hugging Face token
-login(token="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")
+# === Load secrets ===
+load_dotenv()  # Load from .env
+HF_TOKEN = os.getenv("HUGGINGFACE_TOKEN")
 
+# === Authenticate ===
+login(token=HF_TOKEN)
 # Konfigurasi model pake TRANSFORMERS
 @st.cache_resource # agar tidak reload model terus
 def load_model():
