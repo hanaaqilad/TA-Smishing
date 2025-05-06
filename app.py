@@ -7,6 +7,8 @@ from dotenv import load_dotenv
 from huggingface_hub import login
 import os
 
+os.environ["PYTORCH_CUDA_ALLOC_CONF"] = "expandable_segments:True"
+
 # Directly set the Hugging Face token
 # === Load secrets ===
 load_dotenv()  # Load from .env
@@ -21,8 +23,9 @@ def load_model():
     tokenizer = AutoTokenizer.from_pretrained(model_id)
     model = AutoModelForCausalLM.from_pretrained(
         model_id,
-        torch_dtype=torch.float32,
-        low_cpu_mem_usage=True
+        torch_dtype=torch.float16,
+        low_cpu_mem_usage=True,
+        device_map="auto",
     )
     return model, tokenizer
 
