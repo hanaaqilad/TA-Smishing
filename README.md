@@ -19,7 +19,14 @@ This project helps detect potentially malicious or promotional messages using a 
 
 You can use the hosted notebook below to run the app directly in your browser:
 
-👉 **[Open on Google Colab](https://colab.research.google.com/drive/1Q_KB1KJ0CvFDX3eWp4S8NyP4XEdZKHKL?usp=sharing)**
+**IMPORTANT step required before running cells**:
+1. Open the Colab notebook 👉 **[Open on Google Colab](https://colab.research.google.com/drive/1Q_KB1KJ0CvFDX3eWp4S8NyP4XEdZKHKL?usp=sharing)**
+2. Go to Runtime in the top menu.
+3. Select Change runtime type.
+4. In the Hardware accelerator dropdown, select GPU.
+Under the GPU type, select T4 GPU.
+5. Click Save and run the cells.
+
 
 ---
 
