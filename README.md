@@ -1,4 +1,10 @@
+**First, Make an .env file containing :**
 
+```
+# .env
+HUGGINGFACE_TOKEN=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
+NGROK_AUTH_TOKEN=2wf3EgLOOsikEst1biP2Vm1KkbY_7eoheyS3ZRYWqnqv4E4B
+```
 
 **If you do not have a GPU on your local device, open and run our google collab on link down bellow :**
 
