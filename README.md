@@ -79,14 +79,14 @@ TA-Smishing/
 
 This project uses sensitive API tokens from:
 
-- 🔐 **Hugging Face** (`HUGGINGFACE_TOKEN`)
-- 🌐 **Ngrok** (`NGROK_AUTH_TOKEN`)
+- **Hugging Face** (`HUGGINGFACE_TOKEN`)
+- **Ngrok** (`NGROK_AUTH_TOKEN`)
 
 ---
 
 ## 🙌 Acknowledgments
 
-- 🤗 [Hugging Face](https://huggingface.co/)
-- 🦙 LLaMA 3.1 by Meta
-- 🔗 [Ngrok](https://ngrok.com/)
-- 📊 [Streamlit](https://streamlit.io/) for frontend UI
+- [Hugging Face](https://huggingface.co/)
+- LLaMA 3.1 by Meta
+- [Ngrok](https://ngrok.com/)
+- [Streamlit](https://streamlit.io/) for frontend UI
