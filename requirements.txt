@@ -6,3 +6,8 @@ huggingface_hub
 accelerate
 pyngrok
 python-dotenv
+nltk
+Sastrawi
+scikit-learn
+pandas
+scipy
