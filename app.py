@@ -1,6 +1,5 @@
 import streamlit as st
 import torch
-# from unsloth import FastLanguageModel
 # from pyngrok import ngrok 
 from transformers import AutoTokenizer, AutoModelForCausalLM
 from dotenv import load_dotenv
@@ -43,36 +42,46 @@ factory = StemmerFactory()
 stemmer = factory.create_stemmer()
 stop_words = set(stopwords.words('indonesian'))
 
-# Konfigurasi model pake TRANSFORMERS
-# @st.cache_resource # agar tidak reload model terus
-# def load_llm():
-#     model_id = "ilybawkugo/lora-llama3.1-8b-smishing"  # atau model kecil lain yang support CPU
-#     tokenizer = AutoTokenizer.from_pretrained(model_id)
-#     llm = AutoModelForCausalLM.from_pretrained(
-#         model_id,
-#         torch_dtype=torch.float16,
-#         low_cpu_mem_usage=True,
-#         device_map="auto",
-#     )
-#     return llm, tokenizer
+### import unsloth
+try:
+    from unsloth import FastLanguageModel
+    UNSLOTH_AVAILABLE = True
+except ImportError:
+    UNSLOTH_AVAILABLE = False
 
-# # Konfigurasi model pake UNSLOTH
-@st.cache_resource  # agar tidak reload model terus
+@st.cache_resource # agar tidak reload model terus
 def load_llm():
+    model_id = "ilybawkugo/lora-llama3.1-8b-smishing"
     max_seq_length = 2048
     dtype = torch.float16 if torch.cuda.is_available() else torch.float32
-    load_in_4bit = True
-    model_name = "ilybawkugo/lora-llama3.1-8b-smishing"
-    llm, tokenizer = FastLanguageModel.from_pretrained(
-        model_name = model_name,
-        max_seq_length = max_seq_length,
-        dtype = dtype,
-        load_in_4bit = load_in_4bit,
-        device_map = "auto",
-        trust_remote_code = True,
-    )
-    FastLanguageModel.for_inference(llm)
-    return llm, tokenizer
+
+    try:
+        if UNSLOTH_AVAILABLE:
+            # st.info("🔁 Loading model using **Unsloth** backend...")
+            model, tokenizer = FastLanguageModel.from_pretrained(
+                model_name = model_id,
+                max_seq_length = max_seq_length,
+                dtype = dtype,
+                load_in_4bit = True,
+                device_map = "auto",
+                trust_remote_code = True,
+            )
+            FastLanguageModel.for_inference(model)
+            return model, tokenizer
+        else:
+            raise ImportError("Unsloth not installed.")
+        
+    # Fallback ke Hugging Face Transformers
+    except Exception as e:
+        # st.warning(f"⚠️ Unsloth failed: {e}\n\nFalling back to Transformers...")
+        tokenizer = AutoTokenizer.from_pretrained(model_id)
+        model = AutoModelForCausalLM.from_pretrained(
+            model_id,
+            torch_dtype=torch.float16,
+            low_cpu_mem_usage=True,
+            device_map="auto",
+        )
+        return model, tokenizer
 
 llm, tokenizer = load_llm()
 
