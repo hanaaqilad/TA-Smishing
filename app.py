@@ -44,35 +44,35 @@ stemmer = factory.create_stemmer()
 stop_words = set(stopwords.words('indonesian'))
 
 # Konfigurasi model pake TRANSFORMERS
-@st.cache_resource # agar tidak reload model terus
-def load_llm():
-    model_id = "ilybawkugo/lora-llama3.1-8b-smishing"  # atau model kecil lain yang support CPU
-    tokenizer = AutoTokenizer.from_pretrained(model_id)
-    llm = AutoModelForCausalLM.from_pretrained(
-        model_id,
-        torch_dtype=torch.float16,
-        low_cpu_mem_usage=True,
-        device_map="auto",
-    )
-    return llm, tokenizer
+# @st.cache_resource # agar tidak reload model terus
+# def load_llm():
+#     model_id = "ilybawkugo/lora-llama3.1-8b-smishing"  # atau model kecil lain yang support CPU
+#     tokenizer = AutoTokenizer.from_pretrained(model_id)
+#     llm = AutoModelForCausalLM.from_pretrained(
+#         model_id,
+#         torch_dtype=torch.float16,
+#         low_cpu_mem_usage=True,
+#         device_map="auto",
+#     )
+#     return llm, tokenizer
 
 # # Konfigurasi model pake UNSLOTH
-# @st.cache_resource  # agar tidak reload model terus
-# def load_llm():
-#     max_seq_length = 2048
-#     dtype = torch.float16 if torch.cuda.is_available() else torch.float32
-#     load_in_4bit = True
-#     model_name = "ilybawkugo/lora-llama3.1-8b-smishing"
-#     llm, tokenizer = FastLanguageModel.from_pretrained(
-#         model_name = model_name,
-#         max_seq_length = max_seq_length,
-#         dtype = dtype,
-#         load_in_4bit = load_in_4bit,
-#         device_map = "auto",
-#         trust_remote_code = True,
-#     )
-#     FastLanguageModel.for_inference(llm)
-#     return llm, tokenizer
+@st.cache_resource  # agar tidak reload model terus
+def load_llm():
+    max_seq_length = 2048
+    dtype = torch.float16 if torch.cuda.is_available() else torch.float32
+    load_in_4bit = True
+    model_name = "ilybawkugo/lora-llama3.1-8b-smishing"
+    llm, tokenizer = FastLanguageModel.from_pretrained(
+        model_name = model_name,
+        max_seq_length = max_seq_length,
+        dtype = dtype,
+        load_in_4bit = load_in_4bit,
+        device_map = "auto",
+        trust_remote_code = True,
+    )
+    FastLanguageModel.for_inference(llm)
+    return llm, tokenizer
 
 llm, tokenizer = load_llm()
 
@@ -235,7 +235,7 @@ def handle_ml(sms):
 
     df = extract_features(df, text_column="teks") 
     df['teks_standardized'] = df['teks'].apply(clean_and_standardize)
-    X_numerik = df.drop(columns=['label','url_text','teks_standardized', 'teks'])
+    X_numerik = df.drop(columns=['url_text','teks_standardized', 'teks'])
     X_text_standardized = df['teks_standardized']
     X_text_tfidf = vectorizer.transform(X_text_standardized)
     X = hstack([X_text_tfidf, X_numerik])
@@ -251,13 +251,6 @@ def predict_ml(final_input):
         return "penipuan"
     else:
         return "promo"
-
-
-sms_input = st.text_area("Masukkan isi SMS")
-if st.button("Prediksi ML"):
-    final_input = handle_ml(sms_input)
-    result_ml = predict_ml(final_input)
-    st.success(f"Hasil prediksi: **{result_ml}**")
 
 
 # UI Streamlit
