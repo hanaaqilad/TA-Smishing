@@ -17,7 +17,6 @@ from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
 from scipy.sparse import hstack
 
-
 os.environ["PYTORCH_CUDA_ALLOC_CONF"] = "expandable_segments:True"
 
 # set Hugging Face token and authenticate 
@@ -152,14 +151,6 @@ def handle_ml(sms):
         def has_no_telp(text):
             reNoTelp = r'\+?(?:\d[\s\-]?){8,14}'
             return 1 if re.search(reNoTelp, text, re.IGNORECASE) else 0
-
-        # def has_url(text):
-        #   reUrl = r'(?:https?:\/\/)?(?:www\.)?[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}(?:\/[^\s]*)?'
-        #   return 1 if re.search(reUrl, text, re.IGNORECASE) else 0
-
-        # def extract_url(text):
-        #   reUrl = r'(?:https?:\/\/)?(?:www\.)?[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}(?:\/[^\s]*)?'
-        #   return re.findall(reUrl, text, re.IGNORECASE)
 
         def has_url(text):
             # reUrl = r"https?://[^\s\"\'<>]+|www\.[^\s\"\'<>]+|[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}\/[^\s\"\'<>]+"
@@ -306,13 +297,6 @@ if st.button("Cek", type="primary"):
         else:
             st.success(f"**{result_genai}**")
 
-
-# Expose Streamlit app to the web using ngrok
-# public_url = ngrok.connect(8501)
-
-# Run Streamlit app
 os.system(f"streamlit run app.py &")
 
-# Print the public URL
-# print(f"Streamlit app is running at: {public_url}")
 
