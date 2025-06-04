@@ -26,6 +26,11 @@ load_dotenv()
 HF_TOKEN = os.getenv("HUGGINGFACE_TOKEN")
 login(token=HF_TOKEN)
 
+def identity(x): 
+    return x
+
+num_cols = ['cnt_enter', 'alphanum_ratio', 'cnt_special_chars', 'all_caps_ratio', 'symbol_ratio']
+bin_cols = ['phone_num', 'has_url', 'has_money']
 ### Load model ML ###
 def load_ml_assets():
     with open("svm.pkl", "rb") as f:
