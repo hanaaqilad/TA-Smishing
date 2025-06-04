@@ -16,6 +16,7 @@ from Sastrawi.Stemmer.StemmerFactory import StemmerFactory
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
 from scipy.sparse import hstack
+from sklearn.preprocessing import FunctionTransformer
 
 
 os.environ["PYTORCH_CUDA_ALLOC_CONF"] = "expandable_segments:True"
@@ -234,6 +235,11 @@ def handle_ml(sms):
     X_text_standardized = df['teks_standardized']
     
     X_text_tfidf = vectorizer.transform(X_text_standardized)
+
+    for i, (name, trans, cols) in enumerate(scaler.transformers):
+        if isinstance(trans, str) and trans == 'passthrough':
+            scaler.transformers[i] = (name, FunctionTransformer(lambda x: x), cols)
+
     X_numerik_scaled = scaler.transform(X_numerik)
 
     X = hstack([X_text_tfidf, X_numerik_scaled])
