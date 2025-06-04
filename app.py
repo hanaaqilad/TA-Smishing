@@ -230,7 +230,7 @@ def handle_ml(sms):
 
     df = extract_features(df, text_column="teks") 
     df['teks_standardized'] = df['teks'].apply(clean_and_standardize)
-    X_numerik = df.drop(columns=['label','url_text','teks_standardized','has_email','teks'])
+    X_numerik = df.drop(columns=['url_text','teks_standardized','has_email','teks'])
     X_text_standardized = df['teks_standardized']
     
     X_text_tfidf = vectorizer.transform(X_text_standardized)
