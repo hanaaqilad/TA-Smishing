@@ -236,9 +236,9 @@ def handle_ml(sms):
     
     X_text_tfidf = vectorizer.transform(X_text_standardized)
 
-    for i, (name, trans, cols) in enumerate(scaler.transformers):
-        if isinstance(trans, str) and trans == 'passthrough':
-            scaler.transformers[i] = (name, FunctionTransformer(lambda x: x), cols)
+    # for i, (name, trans, cols) in enumerate(scaler.transformers):
+    #     if isinstance(trans, str) and trans == 'passthrough':
+    #         scaler.transformers[i] = (name, FunctionTransformer(lambda x: x), cols)
 
     X_numerik_scaled = scaler.transform(X_numerik)
 
