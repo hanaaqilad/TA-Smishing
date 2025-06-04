@@ -17,6 +17,7 @@ from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
 from scipy.sparse import hstack
 
+
 os.environ["PYTORCH_CUDA_ALLOC_CONF"] = "expandable_segments:True"
 
 # set Hugging Face token and authenticate 
@@ -26,13 +27,15 @@ login(token=HF_TOKEN)
 
 ### Load model ML ###
 def load_ml_assets():
-    with open("svm_model.pkl", "rb") as f:
+    with open("svm.pkl", "rb") as f:
         model_ml = pickle.load(f)
-    with open("vectorizer.pkl", "rb") as f:
+    with open("tf_idf.pkl", "rb") as f:
         vectorizer = pickle.load(f)
-    return model_ml, vectorizer
+    with open("minmax_scaler.pkl", "rb") as f:
+        scaler = pickle.load(f)
+    return model_ml, vectorizer, scaler
 
-model_ml, vectorizer = load_ml_assets()
+model_ml, vectorizer, scaler = load_ml_assets()
 
 nltk.download('punkt_tab')
 nltk.download('stopwords')
@@ -50,8 +53,8 @@ except ImportError:
 
 @st.cache_resource # agar tidak reload model terus
 def load_llm():
-    model_id = "ilybawkugo/lora-llama3.1-8b-smishing"
-    max_seq_length = 2048
+    model_id = "ilybawkugo/lora_lama_2e-4-48-1024"
+    max_seq_length = 1024
     dtype = torch.float16 if torch.cuda.is_available() else torch.float32
 
     try:
@@ -85,32 +88,22 @@ def load_llm():
 llm, tokenizer = load_llm()
 
 # Prompt template
-prompt_cot = """
-  Berikut adalah sebuah instruksi yang menjelaskan sebuah tugas, diikuti dengan sebuah input yang memberikan konteks tambahan. Tulislah respons yang sesuai untuk menyelesaikan permintaan tersebut.
+best_prompt = """
+    Berikut adalah sebuah instruksi yang menjelaskan sebuah tugas, diikuti dengan sebuah input yang memberikan konteks tambahan. Tulislah respons yang sesuai untuk menyelesaikan permintaan tersebut.
 
-  ### Instruction:
-  Baca pesan tersebut lalu ikuti langkah-langkah berikut.
-  Langkah 1: Apakah pesan ini mengandung tautan/link?
-  Langkah 2: Jika pesan ini mengandung tautan/link, apakah tautan/link tersebut sah atau mencurigakan?
-  Langkah 3: Apakah pesan ini mengandung nomor telepon?
-  Langkah 4: Apakah pesan ini mengandung alamat email?
-  Langkah 5: Apakah pesan ini mengandung indikasi kalimat terkait uang?
-  Langkah 6: Apakah pesan ini mengandung indikasi hadiah?
-  Langkah 7: Apakah pesan ini mengandung simbol aneh?
-  Langkah 8: Apakah pesan ini mengandung huruf dengan case yang tidak beraturan?
-  Langkah 9: Berdasarkan langkah-langkah tersebut, tentukan apakah ini penipuan, promo, atau normal?
-  Jawab Penipuan/Promo/Normal
+    ### Instruction:
+    Tentukan apakah teks berikut merupakan pesan penipuan, pesan promo, atau pesan normal. Jawab dengan hanya menggunakan satu kata (Penipuan/Promo/Normal).
 
-  ### Input:
-  {}
+    ### Input:
+    {}
 
-  ### Response:
-  {}
+    ### Response:
+    {}
 """
 
 # Fungsi klasifikasi GEN AI
 def classify_sms(sms):
-    prompt = prompt_cot.format(sms, "")
+    prompt = best_prompt.format(sms, "")
     inputs = tokenizer([prompt], return_tensors="pt").to(llm.device)
 
     with torch.no_grad():
@@ -148,7 +141,7 @@ def handle_ml(sms):
 
     # Numerical feature engineering for ML
     def extract_features(df, text_column):
-        def has_no_telp(text):
+        def has_phone_num(text):
             reNoTelp = r'\+?(?:\d[\s\-]?){8,14}'
             return 1 if re.search(reNoTelp, text, re.IGNORECASE) else 0
 
@@ -167,7 +160,7 @@ def handle_ml(sms):
             return 1 if re.search(reEmail, text, re.IGNORECASE) else 0
 
         def has_money_terms(text):
-            money_terms = ['uang', 'dana', 'jt', 'juta', 'rb', 'rp', 'ribu', 'rupiah', 'milyar', 'miliar', 'triliun', 'trilyun', '%', 'modal']
+            money_terms = ['uang', 'dana', 'jt', 'juta', 'rb', 'rp', 'ribu', 'ratus', 'rupiah', 'milyar', 'miliar', 'triliun', 'trilyun', '%', 'modal']
             return int(any(term in text.lower() for term in money_terms))
 
         def num_linebreaks(text):
@@ -198,11 +191,10 @@ def handle_ml(sms):
             return len(symbol_words) / len(words)
 
         # Apply all feature functions
-        df['no_telp'] = df[text_column].apply(has_no_telp)
-        df['url'] = df[text_column].apply(has_url)
+        df['phone_num'] = df[text_column].apply(has_phone_num)
+        df['has_url'] = df[text_column].apply(has_url)
         df['url_text'] = df[text_column].apply(extract_url)
-        df['has_url'] = df['url_text'].apply(lambda x: 1 if len(x) > 0 else 0)
-        df['email'] = df[text_column].apply(has_email)
+        df['has_email'] = df[text_column].apply(has_email)
         df['has_money'] = df[text_column].apply(has_money_terms)
         df['cnt_enter'] = df[text_column].apply(num_linebreaks)
         df['alphanum_ratio'] = df[text_column].apply(alphanum_word_ratio)
@@ -235,10 +227,13 @@ def handle_ml(sms):
 
     df = extract_features(df, text_column="teks") 
     df['teks_standardized'] = df['teks'].apply(clean_and_standardize)
-    X_numerik = df.drop(columns=['url_text','teks_standardized', 'teks'])
+    X_numerik = df.drop(columns=['label','url_text','teks_standardized','has_email','teks'])
     X_text_standardized = df['teks_standardized']
+    
     X_text_tfidf = vectorizer.transform(X_text_standardized)
-    X = hstack([X_text_tfidf, X_numerik])
+    X_numerik_scaled = scaler.transform(X_numerik)
+
+    X = hstack([X_text_tfidf, X_numerik_scaled])
 
     return X
 
@@ -297,6 +292,13 @@ if st.button("Cek", type="primary"):
         else:
             st.success(f"**{result_genai}**")
 
+
+# Expose Streamlit app to the web using ngrok
+# public_url = ngrok.connect(8501)
+
+# Run Streamlit app
 os.system(f"streamlit run app.py &")
 
+# Print the public URL
+# print(f"Streamlit app is running at: {public_url}")
 
