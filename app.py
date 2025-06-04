@@ -55,6 +55,7 @@ except ImportError:
 def load_llm():
     model_id = "ilybawkugo/lora_lama_2e-4-48-1024"
     max_seq_length = 1024
+    epoch = "epoch-5"
     dtype = torch.float16 if torch.cuda.is_available() else torch.float32
 
     try:
@@ -62,6 +63,7 @@ def load_llm():
             # st.info("🔁 Loading model using **Unsloth** backend...")
             model, tokenizer = FastLanguageModel.from_pretrained(
                 model_name = model_id,
+                revision = epoch,                   
                 max_seq_length = max_seq_length,
                 dtype = dtype,
                 load_in_4bit = True,
