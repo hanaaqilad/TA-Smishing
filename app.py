@@ -16,6 +16,7 @@ from Sastrawi.Stemmer.StemmerFactory import StemmerFactory
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
 from scipy.sparse import hstack
+from peft import PeftModel
 
 
 os.environ["PYTORCH_CUDA_ALLOC_CONF"] = "expandable_segments:True"
@@ -54,6 +55,7 @@ except ImportError:
 @st.cache_resource # agar tidak reload model terus
 def load_llm():
     model_id = "ilybawkugo/lora_lama_2e-4-48-1024"
+    base_model_id = "unsloth/meta-llama-3.1-8b-unsloth-bnb-4bit"
     max_seq_length = 1024
     epoch = "epoch-5"
     dtype = torch.float16 if torch.cuda.is_available() else torch.float32
@@ -62,14 +64,14 @@ def load_llm():
         if UNSLOTH_AVAILABLE:
             # st.info("🔁 Loading model using **Unsloth** backend...")
             model, tokenizer = FastLanguageModel.from_pretrained(
-                model_name = model_id,
-                revision = epoch,                   
+                model_name = base_model_id,
                 max_seq_length = max_seq_length,
                 dtype = dtype,
                 load_in_4bit = True,
                 device_map = "auto",
                 trust_remote_code = True,
             )
+            model = PeftModel.from_pretrained(model, model_id, revision=epoch)
             FastLanguageModel.for_inference(model)
             return model, tokenizer
         else:
@@ -78,13 +80,14 @@ def load_llm():
     # Fallback ke Hugging Face Transformers
     except Exception as e:
         # st.warning(f"⚠️ Unsloth failed: {e}\n\nFalling back to Transformers...")
-        tokenizer = AutoTokenizer.from_pretrained(model_id)
+        tokenizer = AutoTokenizer.from_pretrained(base_model_id)
         model = AutoModelForCausalLM.from_pretrained(
-            model_id,
+            base_model_id,
             torch_dtype=torch.float16,
             low_cpu_mem_usage=True,
             device_map="auto",
         )
+        model = PeftModel.from_pretrained(base_model_id, model_id, revision=epoch)
         return model, tokenizer
 
 llm, tokenizer = load_llm()
