@@ -19,11 +19,9 @@ st.markdown("Masukkan isi SMS dan model akan menganalisisnya.")
 ### Input SMS ###
 sms_input = st.text_area("Input isi SMS", height=150)
 
-col1, col2 = st.columns([3, 1])
-with col1:
-    sms_input = st.text_area("Isi SMS", height=150)
-
-with col2:
+# Tombol di kanan bawah
+col1, col2, col3, col4, col5 = st.columns(5)  # atur kolom biar tombol ke kanan
+with col5:
     cek = st.button("Cek", type="primary", use_container_width=True)
 
 ### Hasil ###
