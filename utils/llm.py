@@ -55,15 +55,21 @@ def load_llm():
             return model, tokenizer
         else:
             raise ImportError("Unsloth not installed.")
-        
+    
     # Fallback ke Hugging Face Transformers
     except Exception as e:
-        tokenizer = AutoTokenizer.from_pretrained(model_id)
+        tokenizer = AutoTokenizer.from_pretrained(
+            model_id,
+            revision=epoch,
+            trust_remote_code=True
+        )
         model = AutoModelForCausalLM.from_pretrained(
             model_id,
-            torch_dtype=torch.float16,
-            low_cpu_mem_usage=True,
+            revision=epoch,
+            trust_remote_code=True,
+            torch_dtype=dtype,
             device_map="auto",
+            low_cpu_mem_usage=True,
         )
         return model, tokenizer
 
