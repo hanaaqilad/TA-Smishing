@@ -9,18 +9,18 @@ from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
 from scipy.sparse import hstack
 
+### Supporting function ###
+def identity(x): 
+    return x
+
 ### Load model ML ###
 def load_ml_assets():
     with open("utils/svm.pkl", "rb") as f:
         model_ml = pickle.load(f)
     with open("utils/tf_idf.pkl", "rb") as f:
         vectorizer = pickle.load(f)
-
-    def identity(x): 
-        return x
     with open("utils/minmax_scaler.pkl", "rb") as f:
         scaler = pickle.load(f)
-        
     return model_ml, vectorizer, scaler
 
 ### Predict with ML model ###

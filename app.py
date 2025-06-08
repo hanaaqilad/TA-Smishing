@@ -1,7 +1,7 @@
 import streamlit as st
 import os
 
-from utils.ml import load_ml_assets, handle_ml, predict_ml
+from utils.ml import load_ml_assets, handle_ml, predict_ml, identity
 from utils.llm import load_llm, classify_sms
 
 from dotenv import load_dotenv
