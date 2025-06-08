@@ -32,7 +32,7 @@ def load_llm():
     try:
         from unsloth import FastLanguageModel
         UNSLOTH_AVAILABLE = True
-    except ImportError:
+    except (ImportError, NotImplementedError):
         UNSLOTH_AVAILABLE = False
 
     model_id = "ilybawkugo/lora_lama_2e-4-48-1024"
