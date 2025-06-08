@@ -11,11 +11,11 @@ from scipy.sparse import hstack
 
 ### Load model ML ###
 def load_ml_assets():
-    with open("svm.pkl", "rb") as f:
+    with open("utils/svm.pkl", "rb") as f:
         model_ml = pickle.load(f)
-    with open("tf_idf.pkl", "rb") as f:
+    with open("utils/tf_idf.pkl", "rb") as f:
         vectorizer = pickle.load(f)
-    with open("minmax_scaler.pkl", "rb") as f:
+    with open("utils/minmax_scaler.pkl", "rb") as f:
         scaler = pickle.load(f)
     return model_ml, vectorizer, scaler
 

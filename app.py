@@ -4,6 +4,9 @@ import os
 from utils.ml import load_ml_assets, handle_ml, predict_ml
 from utils.llm import load_llm, classify_sms
 
+from dotenv import load_dotenv
+load_dotenv()
+
 ### Load models ###
 model_ml, vectorizer, scaler = load_ml_assets()
 llm, tokenizer = load_llm()

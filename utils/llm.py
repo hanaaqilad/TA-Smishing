@@ -1,7 +1,6 @@
 import os
 import torch
 import streamlit as st
-from dotenv import load_dotenv
 from huggingface_hub import login
 from transformers import AutoTokenizer, AutoModelForCausalLM
 ### import unsloth
@@ -10,7 +9,6 @@ from transformers import AutoTokenizer, AutoModelForCausalLM
 
 ### Auth HuggingFace Token ###
 os.environ["PYTORCH_CUDA_ALLOC_CONF"] = "expandable_segments:True"
-load_dotenv()
 HF_TOKEN = os.getenv("HUGGINGFACE_TOKEN")
 login(token=HF_TOKEN)
 
