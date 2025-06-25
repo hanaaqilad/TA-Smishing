@@ -90,3 +90,11 @@ This project uses sensitive API tokens from:
 - LLaMA 3.1 by Meta
 - [Ngrok](https://ngrok.com/)
 - [Streamlit](https://streamlit.io/) for frontend UI
+
+---
+
+## Author
+
+- Azmi Rahmadisha
+- Hana Devi Aqila
+- Laela Putri Salsa Biella
